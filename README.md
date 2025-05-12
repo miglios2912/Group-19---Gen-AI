@@ -1,4 +1,5 @@
-LLM-Based Onboarding Chatbot for TUM
+#LLM-Based Onboarding Chatbot for TUM
+
 A conversational assistant powered by Large Language Models (LLMs) to streamline the onboarding experience for new professors, staff, and employees at the Technical University of Munich (TUM).
 
 📌 Project Overview
