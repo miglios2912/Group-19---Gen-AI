@@ -103,4 +103,4 @@ tum-onboarding-chatbot/
 ## 📩 Contact
 
 For questions, feedback, or collaboration opportunities:  
-📧 Email: [your-email@tum.de]
+📧 Email: simone.miglio@tum.de
