@@ -34,7 +34,7 @@ To run this project locally:
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/your-org/tum-onboarding-chatbot.git
+git clone https://github.com/miglios2912/Group-19---Gen-AI
 cd tum-onboarding-chatbot
 ```
 
