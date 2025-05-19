@@ -23,7 +23,7 @@ Key onboarding support includes:
 
 - **Frontend:** React (for web interface)  
 - **Backend:** Python (FastAPI or Flask)  
-- **LLM Integration:** OpenAI GPT-4 (via API) or Open-Source (e.g., LLaMA, Mistral)  
+- **LLM Integration:** OpenAI GPT-4 (via API)  
 - **Retrieval System:** LangChain or LlamaIndex (RAG pipeline)  
 - **Vector DB:** FAISS / Chroma / Pinecone  
 - **Hosting:** Render, Vercel, or TUM internal servers  
@@ -64,7 +64,7 @@ npm start
 
 ## How It Works
 
-1️⃣ User asks a natural-language question (e.g., “How do I get keys to my office?”)  
+1️⃣ User asks a natural-language question (e.g., “How do I get ...?”)  
 2️⃣ The chatbot uses retrieval-augmented generation (RAG) to fetch relevant onboarding info  
 3️⃣ If needed, it asks follow-up questions (e.g., “Which department are you in?”)  
 4️⃣ LLM generates a personalized, concise response with optional links or forms  
