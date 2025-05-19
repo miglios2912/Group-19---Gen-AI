@@ -1,7 +1,7 @@
-# 🧠 LLM-Based Onboarding Chatbot for TUM  
+# LLM-Based Onboarding Chatbot for TUM  
 A conversational assistant powered by Large Language Models (LLMs) to streamline the onboarding experience for new professors, staff, and employees at the Technical University of Munich (TUM).
 
-## 📌 Project Overview
+## Project Overview
 
 This project delivers a smart, AI-based chatbot designed to help new employees and faculty members at TUM get quick, accurate answers to onboarding-related questions. It retrieves real-time institutional data and personalizes responses based on department, role, and user context.
 
@@ -11,7 +11,7 @@ Key onboarding support includes:
 - Administrative contact lookups  
 - Access to forms, guidelines, and internal links  
 
-## 🚀 Features
+## Features
 
 ✅ Natural Language Understanding for Vague or Incomplete Questions  
 ✅ Personalization Based on Department and Role  
@@ -19,7 +19,7 @@ Key onboarding support includes:
 ✅ Clarifying Follow-up Questions to Improve Accuracy  
 ✅ Chat Interface with Quick Action Links and Document Suggestions  
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend:** React (for web interface)  
 - **Backend:** Python (FastAPI or Flask)  
@@ -28,7 +28,7 @@ Key onboarding support includes:
 - **Vector DB:** FAISS / Chroma / Pinecone  
 - **Hosting:** Render, Vercel, or TUM internal servers  
 
-## 📥 Installation & Setup
+## Installation & Setup
 
 To run this project locally:
 
@@ -62,7 +62,7 @@ python app.py
 npm start
 ```
 
-## 💬 How It Works
+## How It Works
 
 1️⃣ User asks a natural-language question (e.g., “How do I get keys to my office?”)  
 2️⃣ The chatbot uses retrieval-augmented generation (RAG) to fetch relevant onboarding info  
@@ -70,7 +70,7 @@ npm start
 4️⃣ LLM generates a personalized, concise response with optional links or forms  
 5️⃣ The user receives tailored onboarding guidance in seconds  
 
-## 🗂 Folder Structure
+## Folder Structure
 
 ```
 tum-onboarding-chatbot/
@@ -93,7 +93,7 @@ tum-onboarding-chatbot/
 └── README.md
 ```
 
-## 💡 Future Improvements
+## Future Improvements
 
 🔹 **Authentication Integration** – Enable user-specific history and settings  
 🔹 **Multilingual Support** – Serve responses in German or English  
