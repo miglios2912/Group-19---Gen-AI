@@ -1,8 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ChatWindow() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+
+  // Show welcome message on first load
+  useEffect(() => {
+    setMessages([
+      { role: "bot", text: "👋 Welcome to the TUM Onboarding Assistant!" }
+    ]);
+  }, []);
 
   const sendMessage = () => {
     if (!input.trim()) return;
@@ -22,32 +29,40 @@ export default function ChatWindow() {
   };
 
   return (
-    <div className="flex flex-col h-full p-4">
-      <div className="flex-1 overflow-y-auto space-y-2 mb-4">
+    <div className="flex flex-col h-full p-6 bg-white rounded-xl">
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto space-y-3 mb-4">
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`p-2 rounded-lg max-w-md ${
-              msg.role === "user" ? "bg-blue-200 self-end" : "bg-gray-200 self-start"
+            className={`px-4 py-2 rounded-2xl max-w-[75%] whitespace-pre-wrap shadow-sm ${
+              msg.role === "user"
+                ? "bg-tumblue text-white self-end"
+                : "bg-lightgray text-anthracite self-start"
             }`}
           >
             {msg.text}
           </div>
         ))}
       </div>
-      <div className="flex">
-        <input
-          className="flex-1 border border-gray-300 p-2 rounded-l-lg"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-        />
-        <button
-          className="bg-blue-500 text-white px-4 rounded-r-lg"
-          onClick={sendMessage}
-        >
-          Send
-        </button>
+
+      {/* Input area */}
+      <div className="pt-4">
+        <div className="flex shadow-md rounded-xl overflow-hidden border border-gray-300">
+          <input
+            className="flex-1 p-3 text-sm outline-none bg-white"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            placeholder="Ask me anything about onboarding at TUM..."
+          />
+          <button
+            className="bg-tumblue text-white px-6 text-sm hover:bg-tumhover transition"
+            onClick={sendMessage}
+          >
+            Send
+          </button>
+        </div>
       </div>
     </div>
   );
