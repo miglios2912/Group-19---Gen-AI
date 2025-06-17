@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
+import "./ChatWindow.css"; // Make sure this file exists and is linked
 
 export default function ChatWindow() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
-  // Show welcome message on first load
   useEffect(() => {
     setMessages([
-      { role: "bot", text: "👋 Welcome to the TUM Onboarding Assistant!" }
+      { role: "bot", text: "👋 Welcome to the TUM Onboarding Assistant!" },
     ]);
   }, []);
 
@@ -15,54 +15,43 @@ export default function ChatWindow() {
     if (!input.trim()) return;
 
     const userMessage = { role: "user", text: input };
-    const botMessage = { role: "bot", text: "Thinking..." };
+    const botMessage = { role: "bot", text: "Processing your question..." };
 
-    setMessages([...messages, userMessage, botMessage]);
+    setMessages((prev) => [...prev, userMessage, botMessage]);
     setInput("");
 
     setTimeout(() => {
       setMessages((prev) => [
         ...prev.slice(0, -1),
-        { role: "bot", text: `Response to: "${input}"` },
+        { role: "bot", text: `🧠 Here's a response to: "${input}"` },
       ]);
     }, 800);
   };
 
   return (
-    <div className="flex flex-col h-full p-6 bg-white rounded-xl">
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto space-y-3 mb-4">
+    <div className="chat-window">
+      <div className="messages">
         {messages.map((msg, i) => (
           <div
             key={i}
-            className={`px-4 py-2 rounded-2xl max-w-[75%] whitespace-pre-wrap shadow-sm ${
-              msg.role === "user"
-                ? "bg-tumblue text-white self-end"
-                : "bg-lightgray text-anthracite self-start"
-            }`}
+            className={`message ${msg.role === "user" ? "user" : "bot"}`}
           >
             {msg.text}
           </div>
         ))}
       </div>
 
-      {/* Input area */}
-      <div className="pt-4">
-        <div className="flex shadow-md rounded-xl overflow-hidden border border-gray-300">
-          <input
-            className="flex-1 p-3 text-sm outline-none bg-white"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-            placeholder="Ask me anything about onboarding at TUM..."
-          />
-          <button
-            className="bg-tumblue text-white px-6 text-sm hover:bg-tumhover transition"
-            onClick={sendMessage}
-          >
-            Send
-          </button>
-        </div>
+      <div className="input-bar">
+        <input
+          className="input-field"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+          placeholder="Ask me anything about onboarding at TUM..."
+        />
+        <button className="send-button" onClick={sendMessage}>
+          Send
+        </button>
       </div>
     </div>
   );
