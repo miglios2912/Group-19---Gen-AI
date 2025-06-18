@@ -1,78 +1,31 @@
-/* App.css or ChatWindow.css */
+/* App.css */
 
-.chat-wrapper {
-  display: flex;
-  flex-direction: column;
+.app-wrapper {
   min-height: 100vh;
   background-color: #E3EFF7; /* iceblue */
   font-family: sans-serif;
+  padding-top: 2rem; /* Add some space at the top */
 }
 
-.chat-header {
-  background-color: white;
-  padding: 1rem;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
+/* The .chat-header and .chat-logo styles have been removed from here */
 
-.chat-logo {
-  height: 48px;
+.main-content {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto; /* Removed top/bottom margin */
+  padding: 0 1rem;
 }
 
 .chat-container {
-  max-width: 700px;
-  margin: 2rem auto;
-  background-color: white;
+  display: flex;
+  flex-direction: column;
   border-radius: 1rem;
-  padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border: 1px solid #ddd;
-}
-
-.message-bubble {
-  max-width: 75%;
-  padding: 0.75rem 1rem;
-  border-radius: 1.25rem;
-  margin-bottom: 0.75rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  white-space: pre-wrap;
-}
-
-.user {
-  background-color: #3070B3;
-  color: white;
-  align-self: flex-end;
-}
-
-.bot {
-  background-color: #F5F5F5;
-  color: #333;
-  align-self: flex-start;
-}
-
-.chat-input {
-  display: flex;
-  margin-top: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 1rem;
   overflow: hidden;
-}
-
-.chat-input input {
-  flex: 1;
-  padding: 0.75rem;
-  border: none;
-  outline: none;
-}
-
-.chat-input button {
-  background-color: #3070B3;
-  color: white;
-  padding: 0 1.5rem;
-  border: none;
-  cursor: pointer;
-}
-
-.chat-input button:hover {
-  background-color: #245a8d;
+  height: calc(100vh - 4rem); /* Adjust height to fit viewport minus padding */
+  max-height: 900px; /* Optional: set a max height */
 }
