@@ -1,14 +1,13 @@
-import './App.css'; // or ChatWindow.css
-import ChatWindow from './components/ChatWindow';
+import './App.css';
+import ChatWindow from './components/ChatWindow.jsx'; // Using .jsx
+import InfoSidebar from './components/InfoSidebar.jsx'; // Using .jsx
 
 export default function App() {
   return (
-    <div className="chat-wrapper">
-      <header className="chat-header">
-        <img src="/tum-logo.png" alt="TUM Logo" className="chat-logo" />
-      </header>
-
-      <main>
+    <div className="app-wrapper">
+      {/* The main header has been removed */}
+      <main className="main-content">
+        <InfoSidebar />
         <div className="chat-container">
           <ChatWindow />
         </div>

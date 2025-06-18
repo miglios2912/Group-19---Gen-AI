@@ -1,0 +1,52 @@
+.info-sidebar {
+  background-color: #f5f8fa;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid #e1e8ed;
+  height: fit-content; /* Makes the sidebar only as tall as its content */
+}
+
+.sidebar-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.75rem;
+}
+
+.info-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.info-card {
+  display: block;
+  background-color: white;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+}
+
+.info-card h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  color: #3070b3;
+}
+
+.info-card p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #555;
+}

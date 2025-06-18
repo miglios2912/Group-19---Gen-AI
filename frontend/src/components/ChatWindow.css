@@ -2,10 +2,23 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 1rem;
+  padding: 0; /* Remove padding to allow header to be flush */
   background-color: white;
   border-radius: 1rem;
   font-family: sans-serif;
+  overflow: hidden; /* Keep everything inside the rounded corners */
+}
+
+/* Internal Header for the Logo */
+.chat-header-internal {
+  padding: 1rem;
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+  background-color: white;
+}
+
+.chat-logo-internal {
+  height: 40px;
 }
 
 .messages {
@@ -13,51 +26,84 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 1rem; /* Increased gap for better spacing */
+  padding: 1.5rem 1rem; /* Add padding here instead of chat-window */
+  margin-bottom: 0;
+}
+
+/* New container to wrap message bubble and copy button */
+.message-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 85%;
+}
+
+.message-container.user {
+  align-self: flex-end;
+}
+
+.message-container.bot {
+  align-self: flex-start;
 }
 
 .message {
   padding: 0.75rem 1rem;
   border-radius: 1.25rem;
-  max-width: 75%;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   white-space: pre-wrap;
+  /* Max-width is now handled by the container */
+}
+
+.copy-button {
+  background-color: #eef2f5;
+  color: #555;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  flex-shrink: 0; /* Prevents the button from shrinking */
+}
+
+.copy-button:hover {
+  background-color: #dfe6eb;
 }
 
 .user {
   background-color: #3070b3;
   color: white;
-  align-self: flex-end;
 }
 
 .bot {
   background-color: #f5f5f5;
   color: #333;
-  align-self: flex-start;
 }
 
 .input-bar {
   display: flex;
-  border: 1px solid #ccc;
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border-top: 1px solid #f0f0f0;
+  padding: 0.75rem;
+  align-items: center;
 }
 
 .input-field {
   flex: 1;
   padding: 0.75rem;
-  border: none;
+  border: 1px solid #ccc;
+  border-radius: 1rem;
   outline: none;
   font-size: 0.9rem;
+  margin: 0 0.75rem;
 }
 
 .send-button {
   background-color: #3070b3;
   color: white;
   border: none;
-  padding: 0 1.5rem;
+  padding: 0.75rem 1.5rem; /* Make height consistent */
+  border-radius: 1rem;
   cursor: pointer;
   font-size: 0.9rem;
   transition: background-color 0.2s ease;
@@ -65,4 +111,39 @@
 
 .send-button:hover {
   background-color: #245a8d;
+}
+
+.attach-button {
+  background-color: transparent;
+  border: none;
+  padding: 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: #555;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.attach-button:hover {
+  color: #3070b3;
+}
+
+.action-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  padding-bottom: 0.75rem;
+  background-color: white;
+}
+
+.action-link {
+  color: #555;
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.action-link:hover {
+  color: #3070b3;
+  text-decoration: underline;
 }
