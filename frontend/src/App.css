@@ -1,31 +1,126 @@
 /* App.css */
 
-.app-wrapper {
+.chat-wrapper {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background-color: #E3EFF7; /* iceblue */
   font-family: sans-serif;
-  padding-top: 2rem; /* Add some space at the top */
 }
 
-/* The .chat-header and .chat-logo styles have been removed from here */
-
+/* NEW: Wraps sidebar + chat */
 .main-content {
-  display: grid;
-  grid-template-columns: 320px 1fr;
+  display: flex;
   gap: 2rem;
-  width: 100%;
   max-width: 1200px;
-  margin: 0 auto; /* Removed top/bottom margin */
+
+  /* Shift layout to the left */
+  margin-left: 13rem;
+  margin-right: auto;
+
   padding: 0 1rem;
 }
 
-.chat-container {
-  display: flex;
-  flex-direction: column;
+/* Sidebar styling */
+.sidebar {
+  background-color: white;
+  padding: 1rem;
   border-radius: 1rem;
+  width: 250px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h3 {
+  margin-top: 0;
+}
+
+.link-box {
+  border: 1px solid #f0f0f0;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.link-box a {
+  font-weight: bold;
+  color: #3070b3;
+  text-decoration: none;
+}
+
+.link-box p {
+  font-size: 0.85rem;
+  margin: 0.25rem 0 0;
+}
+
+/* Chat container (right side) */
+.chat-container {
+  flex: 1;
+  max-width: 800px;
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border: 1px solid #ddd;
+}
+
+/* Chat header and logo */
+.chat-header {
+  background-color: white;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.chat-logo {
+  height: 48px;
+}
+
+/* Messages */
+.message-bubble {
+  max-width: 75%;
+  padding: 0.75rem 1rem;
+  border-radius: 1.25rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  white-space: pre-wrap;
+}
+
+.user {
+  background-color: #3070B3;
+  color: white;
+  align-self: flex-end;
+}
+
+.bot {
+  background-color: #F5F5F5;
+  color: #333;
+  align-self: flex-start;
+}
+
+/* Input area */
+.chat-input {
+  display: flex;
+  margin-top: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 1rem;
   overflow: hidden;
-  height: calc(100vh - 4rem); /* Adjust height to fit viewport minus padding */
-  max-height: 900px; /* Optional: set a max height */
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  outline: none;
+}
+
+.chat-input button {
+  background-color: #3070B3;
+  color: white;
+  padding: 0 1.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+.chat-input button:hover {
+  background-color: #245a8d;
 }
