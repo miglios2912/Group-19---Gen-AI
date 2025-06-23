@@ -1,0 +1,160 @@
+# =============================================================================
+# TUM Chatbot Backend Configuration
+# =============================================================================
+# 
+# This file contains all configuration options for the TUM Chatbot backend.
+# Copy this file to .env and modify the values as needed.
+#
+# IMPORTANT: Set ENVIRONMENT to either "development" or "production"
+# This single setting controls all environment-specific behavior.
+
+# =============================================================================
+# ENVIRONMENT SETTING (REQUIRED)
+# =============================================================================
+
+# Set to "development" or "production"
+# This controls debug mode, logging levels, and other environment-specific settings
+ENVIRONMENT=development
+
+# =============================================================================
+# Application Settings
+# =============================================================================
+
+APP_NAME=TUM Chatbot
+APP_VERSION=1.0.0
+
+# =============================================================================
+# API Configuration
+# =============================================================================
+
+# Google Gemini API (Required)
+# Get your API key from: https://makersuite.google.com/app/apikey
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Gemini Model Configuration
+GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MAX_TOKENS=4096
+GEMINI_TEMPERATURE=0.7
+
+# =============================================================================
+# Server Configuration
+# =============================================================================
+
+# Server Settings
+SERVER_HOST=0.0.0.0
+SERVER_PORT=8080
+REQUEST_TIMEOUT=30
+
+# CORS Configuration
+ENABLE_CORS=True
+CORS_ORIGINS=http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000
+
+# Rate Limiting
+ENABLE_RATE_LIMITING=True
+RATE_LIMIT_REQUESTS=1000
+RATE_LIMIT_WINDOW=3600
+
+# Session Management
+SESSION_TIMEOUT=3600
+
+# =============================================================================
+# Database Configuration
+# =============================================================================
+
+# ChromaDB Vector Database
+CHROMA_DB_PATH=./chroma_db
+CHROMA_COLLECTION_NAME=tum_qa_collection
+CHROMA_PERSIST_DIR=./chroma_db
+
+# =============================================================================
+# Search Configuration
+# =============================================================================
+
+# Search Parameters
+SEMANTIC_SEARCH_TOP_K=5
+KEYWORD_SEARCH_TOP_K=5
+HYBRID_SEARCH_TOP_K=5
+EMBEDDING_MODEL=all-MiniLM-L6-v2
+SIMILARITY_THRESHOLD=0.3
+
+# =============================================================================
+# Knowledge Base Configuration
+# =============================================================================
+
+# Knowledge Base Path (relative to backend directory)
+KNOWLEDGE_BASE_PATH=./TUM_QA.json
+MAX_CONTEXT_LENGTH=4000
+CONVERSATION_HISTORY_LIMIT=12
+
+# =============================================================================
+# Logging Configuration
+# =============================================================================
+
+# Logging Settings
+LOG_FILE=./logs/tum_chatbot.log
+LOG_FORMAT=%(asctime)s - %(name)s - %(levelname)s - %(message)s
+MAX_LOG_SIZE=10485760
+LOG_BACKUP_COUNT=5
+
+# Chat Session Logging (Development Only)
+# Enable to log plain text chat sessions for debugging
+LOG_CHAT_SESSIONS=False
+CHAT_SESSION_FILE=./logs/chat_sessions.log
+
+# =============================================================================
+# Statistics and Analytics
+# =============================================================================
+
+# Statistics Configuration
+ENABLE_STATISTICS=True
+STATS_DB_PATH=./statistics.db
+TRACK_USER_SESSIONS=True
+TRACK_QUERY_ANALYTICS=True
+ANONYMIZE_DATA=True
+
+# =============================================================================
+# Production Deployment
+# =============================================================================
+
+# Gunicorn Configuration (for production)
+GUNICORN_WORKERS=4
+
+# =============================================================================
+# ENVIRONMENT-SPECIFIC SETTINGS
+# =============================================================================
+#
+# The following settings are automatically configured based on ENVIRONMENT:
+#
+# DEVELOPMENT (ENVIRONMENT=development):
+# - FLASK_DEBUG=True
+# - LOG_LEVEL=DEBUG
+# - LOG_CHAT_SESSIONS=True (if enabled)
+# - More verbose error messages
+# - Development-friendly CORS origins
+#
+# PRODUCTION (ENVIRONMENT=production):
+# - FLASK_DEBUG=False
+# - LOG_LEVEL=WARNING
+# - LOG_CHAT_SESSIONS=False (always disabled)
+# - Minimal error messages
+# - Strict CORS origins
+# - Enhanced security settings
+#
+# You can override these automatic settings by explicitly setting the values below:
+
+# Override automatic debug mode (leave commented to use environment-based setting)
+# FLASK_DEBUG=True
+
+# Override automatic log level (leave commented to use environment-based setting)
+# LOG_LEVEL=DEBUG
+
+# =============================================================================
+# NOTES
+# =============================================================================
+#
+# 1. Set ENVIRONMENT=development for local development
+# 2. Set ENVIRONMENT=production for production deployment
+# 3. The system automatically configures appropriate settings based on ENVIRONMENT
+# 4. You can override automatic settings by uncommenting and setting values above
+# 5. For production, ensure GEMINI_API_KEY is set to your actual API key
+# 6. For production, update CORS_ORIGINS to include your frontend domain 
