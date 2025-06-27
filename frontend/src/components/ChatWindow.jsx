@@ -13,6 +13,12 @@ export default function ChatWindow() {
 	const [sessionId, setSessionId] = useState(null);
 	const [userId] = useState(`user_${Math.random().toString(36).substr(2, 9)}`);
 	const fileInputRef = useRef(null);
+	const messagesEndRef = useRef(null);
+
+	// Scroll to bottom when messages change
+	useEffect(() => {
+		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+	}, [messages]);
 
 	// Initialize session on component mount
 	useEffect(() => {
@@ -164,31 +170,32 @@ export default function ChatWindow() {
 				/>
 			</header>
 
-			<div className="messages">
-				{messages.map((msg, i) => (
-					<div key={i} className={`message-container ${msg.role}`}>
-						<div className={`message-bubble ${msg.role}`}>
-							<span>{msg.text}</span>
-							{msg.role === "bot" && (
-								<button
-									onClick={() => handleCopy(msg.text, i)}
-									className="copy-button"
-									title="Copy to clipboard"
-								>
-									{copiedIndex === i ? "✅" : "📋"}
-								</button>
-							)}
-						</div>
-					</div>
-				))}
-				{isLoading && (
-					<div className="message-container bot">
-						<div className="message-bubble bot">
-							<span>Thinking...</span>
-						</div>
-					</div>
-				)}
+				<div className="messages">
+		{messages.map((msg, i) => (
+			<div key={i} className={`message-container ${msg.role}`}>
+				<div className={`message-bubble ${msg.role}`}>
+					<span>{msg.text}</span>
+					{msg.role === "bot" && (
+						<button
+							onClick={() => handleCopy(msg.text, i)}
+							className="copy-button"
+							title="Copy to clipboard"
+						>
+							{copiedIndex === i ? "✅" : "📋"}
+						</button>
+					)}
+				</div>
 			</div>
+		))}
+		{isLoading && (
+			<div className="message-container bot">
+				<div className="message-bubble bot">
+					<span>Thinking...</span>
+				</div>
+			</div>
+		)}
+		<div ref={messagesEndRef} />
+	</div>
 
 			<div className="input-bar">
 				<button className="attach-button" onClick={handleAttachClick}>

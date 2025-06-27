@@ -75,6 +75,8 @@ body {
   gap: 1rem;
   padding: 1.5rem 1rem;
   margin-bottom: 0;
+  max-height: calc(100vh - 250px); /* Adjust this if needed based on your header + input height */
+  scroll-behavior: smooth;
 }
 
 .message-container {

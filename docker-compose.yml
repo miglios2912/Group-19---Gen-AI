@@ -2,7 +2,9 @@ version: "3.8"
 
 services:
   tum-chatbot-backend:
-    build: .
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile
     container_name: tum-chatbot-backend
     ports:
       - "8080:8080"
@@ -105,7 +107,7 @@ services:
       - ./data:/app/data
       - ./logs:/app/logs
       # Mount knowledge base
-      - ./TUM_QA.json:/app/TUM_QA.json:ro
+      - ./backend/TUM_QA.json:/app/TUM_QA.json:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
