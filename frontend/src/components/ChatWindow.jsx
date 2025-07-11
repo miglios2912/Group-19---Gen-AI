@@ -1,9 +1,41 @@
 import { useState, useEffect, useRef } from "react";
 import "./ChatWindow.css";
 
+// Simple markdown parser for basic formatting
+const parseMarkdown = (text) => {
+	if (!text) return text;
+
+	// Convert markdown to HTML
+	let html = text
+		// Bold: ****text**** or **text**
+		.replace(/\*{4}([^*]+)\*{4}/g, "<strong>$1</strong>")
+		.replace(/\*{2}([^*]+)\*{2}/g, "<strong>$1</strong>")
+		// Italic: *text*
+		.replace(/\*([^*]+)\*/g, "<em>$1</em>")
+		// Links: [text](url)
+		.replace(
+			/\[([^\]]+)\]\(([^)]+)\)/g,
+			'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+		)
+		// Email links: email@domain.com
+		.replace(
+			/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g,
+			'<a href="mailto:$1">$1</a>'
+		)
+		// Line breaks
+		.replace(/\n/g, "<br/>");
+
+	return html;
+};
+
 // Backend API configuration
+// In Cloud Run, the frontend and backend are served from the same origin
 const API_BASE_URL =
-	import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+	import.meta.env.VITE_API_BASE_URL ||
+	(window.location.hostname === "localhost" ? "http://localhost:8083" : "");
+
+console.log("API_BASE_URL:", API_BASE_URL);
+console.log("VITE_API_BASE_URL:", import.meta.env.VITE_API_BASE_URL);
 
 export default function ChatWindow() {
 	const [messages, setMessages] = useState([]);
@@ -12,12 +44,19 @@ export default function ChatWindow() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [sessionId, setSessionId] = useState(null);
 	const [userId] = useState(`user_${Math.random().toString(36).substr(2, 9)}`);
+	const [placeholderIndex, setPlaceholderIndex] = useState(0);
+	const [hasUserMessage, setHasUserMessage] = useState(false);
 	const fileInputRef = useRef(null);
 	const messagesEndRef = useRef(null);
+	const inputRef = useRef(null);
 
-	// Scroll to bottom when messages change
-	useEffect(() => {
+	// Auto-scroll to bottom when new messages arrive
+	const scrollToBottom = () => {
 		messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+	};
+
+	useEffect(() => {
+		scrollToBottom();
 	}, [messages]);
 
 	// Initialize session on component mount
@@ -27,7 +66,7 @@ export default function ChatWindow() {
 
 	const initializeSession = async () => {
 		try {
-			const response = await fetch(`${API_BASE_URL}/api/session/start`, {
+			const response = await fetch(`${API_BASE_URL}/api/v2/session/start`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -39,33 +78,15 @@ export default function ChatWindow() {
 				const data = await response.json();
 				setSessionId(data.session_id);
 
-				// Set initial welcome messages
-				setMessages([
-					{ role: "bot", text: "Welcome to the TUM Onboarding Assistant!" },
-					{
-						role: "bot",
-						text: "Hello! I am the TUM Chat-bot Onboarding Assistant. I can help you get right on track with your research aspirations at TUM. What is your role in the University and what step of the process are you in?",
-					},
-				]);
+				// Set initial welcome messages - empty for mobile
+				setMessages([]);
 			} else {
 				console.error("Failed to initialize session");
-				setMessages([
-					{ role: "bot", text: "Welcome to the TUM Onboarding Assistant!" },
-					{
-						role: "bot",
-						text: "Hello! I am the TUM Chat-bot Onboarding Assistant. I can help you get right on track with your research aspirations at TUM. What is your role in the University and what step of the process are you in?",
-					},
-				]);
+				setMessages([]);
 			}
 		} catch (error) {
 			console.error("Error initializing session:", error);
-			setMessages([
-				{ role: "bot", text: "Welcome to the TUM Onboarding Assistant!" },
-				{
-					role: "bot",
-					text: "Hello! I am the TUM Chat-bot Onboarding Assistant. I can help you get right on track with your research aspirations at TUM. What is your role in the University and what step of the process are you in?",
-				},
-			]);
+			setMessages([]);
 		}
 	};
 
@@ -77,8 +98,16 @@ export default function ChatWindow() {
 		setInput("");
 		setIsLoading(true);
 
+		// Set hasUserMessage to true after first user message
+		if (!hasUserMessage) {
+			setHasUserMessage(true);
+		}
+
+		// Blur input to hide mobile keyboard
+		inputRef.current?.blur();
+
 		try {
-			const response = await fetch(`${API_BASE_URL}/api/chat`, {
+			const response = await fetch(`${API_BASE_URL}/api/v2/chat`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -101,23 +130,33 @@ export default function ChatWindow() {
 				]);
 			} else {
 				const errorData = await response.json();
+				const errorText = errorData.error || "Unknown error";
+				const isSecurityBlock =
+					/blocked due to malicious activity|malicious activity detected|permanent ban/i.test(
+						errorText
+					);
 				setMessages((prev) => [
 					...prev,
 					{
 						role: "bot",
-						text: `I apologize, but I encountered an error: ${
-							errorData.error || "Unknown error"
-						}. Please try again or contact support if the problem persists.`,
+						text: isSecurityBlock
+							? errorText
+							: `I apologize, but I encountered an error: ${errorText}. Please try again or contact support if the problem persists.`,
 					},
 				]);
 			}
 		} catch (error) {
 			console.error("Error sending message:", error);
+			console.error("Error details:", error.message);
+			console.error(
+				"Full error:",
+				JSON.stringify(error, Object.getOwnPropertyNames(error))
+			);
 			setMessages((prev) => [
 				...prev,
 				{
 					role: "bot",
-					text: "I apologize, but I'm having trouble connecting to the server. Please check your internet connection and try again.",
+					text: `Connection error: ${error.message}. API URL: ${API_BASE_URL}/api/v2/chat`,
 				},
 			]);
 		} finally {
@@ -125,11 +164,14 @@ export default function ChatWindow() {
 		}
 	};
 
-	const handleCopy = (text, index) => {
-		navigator.clipboard.writeText(text).then(() => {
+	const handleCopy = async (text, index) => {
+		try {
+			await navigator.clipboard.writeText(text);
 			setCopiedIndex(index);
 			setTimeout(() => setCopiedIndex(null), 2000);
-		});
+		} catch (error) {
+			console.error("Failed to copy text:", error);
+		}
 	};
 
 	const handleAttachClick = () => fileInputRef.current.click();
@@ -137,18 +179,51 @@ export default function ChatWindow() {
 	const handleFileChange = (event) => {
 		const file = event.target.files[0];
 		if (file) {
-			const fileMessage = { role: "user", text: `Attached: ${file.name}` };
+			const fileMessage = { role: "user", text: `📎 Attached: ${file.name}` };
 			setMessages((prev) => [...prev, fileMessage]);
 			event.target.value = null;
 		}
+	};
+
+	const handleKeyPress = (e) => {
+		if (e.key === "Enter" && !e.shiftKey && !isLoading) {
+			e.preventDefault();
+			sendMessage();
+		}
+	};
+
+	// Sample questions for rotating placeholder
+	const sampleQuestions = [
+		"How do I set up my TUM email?",
+		"Where can I eat on campus?",
+		"How do I upload my student ID photo?",
+		"What is eduroam setup?",
+		"Where is the library?",
+		"How do I register for courses?",
+		"Where can I print documents?",
+		"How do I get my student ID card?",
+	];
+
+	// Rotate placeholder text every 3 seconds
+	useEffect(() => {
+		const interval = setInterval(() => {
+			setPlaceholderIndex((prev) => (prev + 1) % sampleQuestions.length);
+		}, 3000);
+
+		return () => clearInterval(interval);
+	}, [sampleQuestions.length]);
+
+	const handleSuggestionClick = (suggestion) => {
+		setInput(suggestion);
+		inputRef.current?.focus();
 	};
 
 	// Cleanup session on component unmount
 	useEffect(() => {
 		return () => {
 			if (sessionId) {
-				fetch(`${API_BASE_URL}/api/session/${sessionId}/end`, {
-					method: "POST",
+				fetch(`${API_BASE_URL}/api/v2/session/${sessionId}`, {
+					method: "DELETE",
 					headers: {
 						"Content-Type": "application/json",
 						"X-User-ID": userId,
@@ -162,81 +237,167 @@ export default function ChatWindow() {
 
 	return (
 		<div className="chat-window">
-			<header className="chat-header-internal">
-				<img
-					src="/tum-logo.png"
-					alt="TUM Logo"
-					className="chat-logo-internal"
-				/>
-			</header>
+			<div className="chat-header-mobile">
+				<img src="/tum-logo.png" alt="TUM Logo" className="chat-logo-mobile" />
+				<div className="chat-status">
+					<span className="status-indicator"></span>
+					<span className="status-text">Online</span>
+				</div>
+			</div>
 
+			<div className="messages-container">
+				{messages.length === 0 && (
+					<div className="welcome-animation-mobile">
+						<div className="welcome-content">
+							<div
+								className="typing-text"
+								data-text="Welcome to TUM Onboarding Assistant"
+							>
+								<span></span>
+							</div>
+							<div className="subtitle-text">
+								I can help you with campus navigation, course registration, IT
+								setup, and more
+							</div>
+							<div className="campus-info">
+								👋 Tell me your role and which campus you're at to get started
+							</div>
+						</div>
+					</div>
+				)}
 				<div className="messages">
-		{messages.map((msg, i) => (
-			<div key={i} className={`message-container ${msg.role}`}>
-				<div className={`message-bubble ${msg.role}`}>
-					<span>{msg.text}</span>
-					{msg.role === "bot" && (
-						<button
-							onClick={() => handleCopy(msg.text, i)}
-							className="copy-button"
-							title="Copy to clipboard"
-						>
-							{copiedIndex === i ? "✅" : "📋"}
-						</button>
+					{messages.map((msg, i) => (
+						<div key={i} className={`message-wrapper ${msg.role}`}>
+							<div className={`message-bubble ${msg.role}`}>
+								<div
+									className="message-content"
+									dangerouslySetInnerHTML={{ __html: parseMarkdown(msg.text) }}
+								/>
+								{msg.role === "bot" && (
+									<button
+										onClick={() => handleCopy(msg.text, i)}
+										className="copy-button-mobile"
+										title="Copy to clipboard"
+									>
+										{copiedIndex === i ? (
+											<svg
+												width="16"
+												height="16"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="2"
+											>
+												<polyline points="20,6 9,17 4,12" />
+											</svg>
+										) : (
+											<svg
+												width="16"
+												height="16"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="2"
+											>
+												<rect
+													x="9"
+													y="9"
+													width="13"
+													height="13"
+													rx="2"
+													ry="2"
+												/>
+												<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+											</svg>
+										)}
+									</button>
+								)}
+							</div>
+						</div>
+					))}
+					{isLoading && (
+						<div className="message-wrapper bot">
+							<div className="message-bubble bot loading">
+								<div className="typing-indicator">
+									<span></span>
+									<span></span>
+									<span></span>
+								</div>
+							</div>
+						</div>
 					)}
+					<div ref={messagesEndRef} />
 				</div>
 			</div>
-		))}
-		{isLoading && (
-			<div className="message-container bot">
-				<div className="message-bubble bot">
-					<span>Thinking...</span>
+
+			<div className="input-container floating">
+				<div className="input-bar-mobile">
+					<button
+						className="attach-button-mobile"
+						onClick={handleAttachClick}
+						title="Attach file"
+					>
+						<svg
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+						>
+							<path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+						</svg>
+					</button>
+					<input
+						type="file"
+						ref={fileInputRef}
+						style={{ display: "none" }}
+						onChange={handleFileChange}
+						accept="application/pdf,image/jpeg,image/png"
+					/>
+					<div className="input-wrapper">
+						<textarea
+							ref={inputRef}
+							className="input-field-mobile"
+							value={input}
+							onChange={(e) => setInput(e.target.value)}
+							onKeyPress={handleKeyPress}
+							placeholder={sampleQuestions[placeholderIndex]}
+							disabled={isLoading}
+							rows={1}
+						/>
+					</div>
+					<button
+						className="send-button-mobile"
+						onClick={sendMessage}
+						disabled={isLoading || !input.trim()}
+						title="Send message"
+					>
+						{isLoading ? (
+							<svg
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								className="loading-spinner"
+							>
+								<circle cx="12" cy="12" r="10" />
+								<path d="M12 6v6l4 2" />
+							</svg>
+						) : (
+							<svg
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+							>
+								<path d="M7.33 24l-2.83-2.829 9.339-9.175-9.339-9.167 2.83-2.829 12.17 11.996z" />
+							</svg>
+						)}
+					</button>
 				</div>
-			</div>
-		)}
-		<div ref={messagesEndRef} />
-	</div>
-
-			<div className="input-bar">
-				<button className="attach-button" onClick={handleAttachClick}>
-					+
-				</button>
-				<input
-					type="file"
-					ref={fileInputRef}
-					style={{ display: "none" }}
-					onChange={handleFileChange}
-					accept="application/pdf,image/jpeg,image/png"
-				/>
-				<input
-					className="input-field"
-					value={input}
-					onChange={(e) => setInput(e.target.value)}
-					onKeyDown={(e) => e.key === "Enter" && !isLoading && sendMessage()}
-					placeholder="Ask me anything..."
-					disabled={isLoading}
-				/>
-				<button
-					className="send-button"
-					onClick={sendMessage}
-					disabled={isLoading || !input.trim()}
-				>
-					{isLoading ? "Sending..." : "Send"}
-				</button>
-			</div>
-
-			<div className="action-links">
-				<a href="mailto:onboarding-support@tum.de" className="action-link">
-					Ask for Help
-				</a>
-				<a
-					href="https://your-suggestion-form-url.com"
-					target="_blank"
-					rel="noopener noreferrer"
-					className="action-link"
-				>
-					Suggest Improvement
-				</a>
 			</div>
 		</div>
 	);

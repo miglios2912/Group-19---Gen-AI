@@ -1,126 +1,254 @@
-/* App.css */
-
-.chat-wrapper {
+/* App Layout */
+.app-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  background-color: #E3EFF7; /* iceblue */
-  font-family: sans-serif;
+  height: 100vh;
+  background-color: var(--bg-color);
+  transition: background-color 0.3s ease;
 }
 
-/* NEW: Wraps sidebar + chat */
+/* Mobile Header */
+.mobile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: 60px;
+  box-shadow: 0 2px 4px var(--shadow-light);
+}
+
+/* Safe area for iPhone notch */
+@supports (padding: max(0px)) {
+  .mobile-header {
+    padding-top: max(0.75rem, env(safe-area-inset-top));
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+.sidebar-toggle {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.sidebar-toggle:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.sidebar-toggle:active {
+  transform: scale(0.95);
+}
+
+.app-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+/* Mobile-only header logo (hidden on desktop) */
+.header-logo-mobile {
+  height: 40px;
+  width: auto;
+  max-width: 120px;
+  flex: 1;
+  display: none;
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+  .app-title {
+    display: none;
+  }
+  
+  .header-logo-mobile {
+    display: block;
+    height: 48px;
+    width: auto;
+    max-width: none;
+    object-fit: contain;
+  }
+  
+  .mobile-header {
+    min-height: 60px;
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Dark Mode Toggle */
+.dark-mode-toggle {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.dark-mode-toggle:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.dark-mode-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Main Content */
 .main-content {
   display: flex;
-  gap: 2rem;
-  max-width: 1200px;
-
-  /* Shift layout to the left */
-  margin-left: 13rem;
-  margin-right: auto;
-
-  padding: 0 1rem;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
 }
 
-/* Sidebar styling */
-.sidebar {
-  background-color: white;
-  padding: 1rem;
-  border-radius: 1rem;
-  width: 250px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar h3 {
-  margin-top: 0;
-}
-
-.link-box {
-  border: 1px solid #f0f0f0;
-  padding: 0.75rem;
-  border-radius: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.link-box a {
-  font-weight: bold;
-  color: #3070b3;
-  text-decoration: none;
-}
-
-.link-box p {
-  font-size: 0.85rem;
-  margin: 0.25rem 0 0;
-}
-
-/* Chat container (right side) */
 .chat-container {
   flex: 1;
-  max-width: 800px;
-  background-color: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border: 1px solid #ddd;
-}
-
-/* Chat header and logo */
-.chat-header {
-  background-color: white;
-  padding: 1rem;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.chat-logo {
-  height: 48px;
-}
-
-/* Messages */
-.message-bubble {
-  max-width: 75%;
-  padding: 0.75rem 1rem;
-  border-radius: 1.25rem;
-  margin-bottom: 0.75rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  white-space: pre-wrap;
-}
-
-.user {
-  background-color: #3070B3;
-  color: white;
-  align-self: flex-end;
-}
-
-.bot {
-  background-color: #F5F5F5;
-  color: #333;
-  align-self: flex-start;
-}
-
-/* Input area */
-.chat-input {
   display: flex;
-  margin-top: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 1rem;
+  flex-direction: column;
   overflow: hidden;
+  position: relative;
 }
 
-.chat-input input {
-  flex: 1;
-  padding: 0.75rem;
-  border: none;
-  outline: none;
+/* Sidebar Overlay for Mobile */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--overlay);
+  z-index: 200;
+  transition: opacity 0.3s ease;
+  touch-action: none;
 }
 
-.chat-input button {
-  background-color: #3070B3;
-  color: white;
-  padding: 0 1.5rem;
-  border: none;
-  cursor: pointer;
+/* Desktop Adjustments */
+@media (min-width: 768px) {
+  .mobile-header {
+    display: none;
+  }
+  
+  .main-content {
+    flex-direction: row;
+  }
+  
+  .chat-container {
+    margin-left: 0;
+  }
+  
+  .sidebar-overlay {
+    display: none;
+  }
 }
 
-.chat-input button:hover {
-  background-color: #245a8d;
+/* Large Desktop */
+@media (min-width: 1024px) {
+  .app-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    box-shadow: 0 0 20px var(--shadow);
+  }
+}
+
+/* Animation Classes */
+.slide-in-left {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  :root {
+    --border-color: #000000;
+    --shadow: rgba(0, 0, 0, 0.8);
+  }
+  
+  .dark {
+    --border-color: #ffffff;
+    --text-color: #ffffff;
+    --bg-color: #000000;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .mobile-header,
+  .sidebar-toggle,
+  .dark-mode-toggle,
+  .sidebar-overlay {
+    display: none;
+  }
+  
+  .app-wrapper {
+    height: auto;
+    box-shadow: none;
+  }
 }

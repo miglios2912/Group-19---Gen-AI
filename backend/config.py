@@ -9,7 +9,14 @@ from dataclasses import dataclass, field
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+# Try production environment first, then fall back to default
+import pathlib
+base_dir = pathlib.Path(__file__).parent.parent
+prod_env_path = base_dir / ".env.production"
+if prod_env_path.exists():
+    load_dotenv(prod_env_path)
+else:
+    load_dotenv()
 
 def _get_environment_specific_value(env_var: str, dev_default: str, prod_default: str) -> str:
     """Get environment-specific value based on ENVIRONMENT setting"""
@@ -42,9 +49,9 @@ def _get_environment_specific_bool(env_var: str, dev_default: bool, prod_default
 @dataclass
 class DatabaseConfig:
     """Database configuration settings"""
-    chroma_db_path: str = os.getenv("CHROMA_DB_PATH", "/app/data/chroma_db")
+    chroma_db_path: str = os.getenv("CHROMA_DB_PATH", _get_environment_specific_value("CHROMA_DB_PATH", "./data/chroma_db", "/app/data/chroma_db"))
     collection_name: str = os.getenv("CHROMA_COLLECTION_NAME", "tum_qa_collection")
-    persist_directory: str = os.getenv("CHROMA_PERSIST_DIR", "/app/data/chroma_db")
+    persist_directory: str = os.getenv("CHROMA_PERSIST_DIR", _get_environment_specific_value("CHROMA_PERSIST_DIR", "./data/chroma_db", "/app/data/chroma_db"))
 
 @dataclass
 class APIConfig:
@@ -77,18 +84,18 @@ class ServerConfig:
 class LoggingConfig:
     """Logging configuration settings"""
     log_level: str = _get_environment_specific_value("LOG_LEVEL", "DEBUG", "WARNING")
-    log_file: str = os.getenv("LOG_FILE", "/app/logs/tum_chatbot.log")
+    log_file: str = os.getenv("LOG_FILE", _get_environment_specific_value("LOG_FILE", "./logs/tum_chatbot.log", "/app/logs/tum_chatbot.log"))
     log_format: str = os.getenv("LOG_FORMAT", "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     max_log_size: int = int(os.getenv("MAX_LOG_SIZE", "10485760"))  # 10MB
     backup_count: int = int(os.getenv("LOG_BACKUP_COUNT", "5"))
     log_chat_sessions: bool = _get_environment_specific_bool("LOG_CHAT_SESSIONS", True, False)
-    chat_session_file: str = os.getenv("CHAT_SESSION_FILE", "/app/logs/chat_sessions.log")
+    chat_session_file: str = os.getenv("CHAT_SESSION_FILE", _get_environment_specific_value("CHAT_SESSION_FILE", "./logs/chat_sessions.log", "/app/logs/chat_sessions.log"))
 
 @dataclass
 class StatisticsConfig:
     """Statistics and analytics configuration"""
     enable_statistics: bool = os.getenv("ENABLE_STATISTICS", "True").lower() == "true"
-    stats_db_path: str = os.getenv("STATS_DB_PATH", "/app/data/statistics.db")
+    stats_db_path: str = os.getenv("STATS_DB_PATH", _get_environment_specific_value("STATS_DB_PATH", "./data/statistics.db", "/app/data/statistics.db"))
     track_user_sessions: bool = os.getenv("TRACK_USER_SESSIONS", "True").lower() == "true"
     track_query_analytics: bool = os.getenv("TRACK_QUERY_ANALYTICS", "True").lower() == "true"
     anonymize_data: bool = os.getenv("ANONYMIZE_DATA", "True").lower() == "true"
@@ -101,11 +108,16 @@ class SecurityConfig:
     rate_limit_window: int = int(os.getenv("RATE_LIMIT_WINDOW", "3600"))  # 1 hour
     enable_cors: bool = os.getenv("ENABLE_CORS", "True").lower() == "true"
     session_timeout: int = int(os.getenv("SESSION_TIMEOUT", "3600"))  # 1 hour
+    enable_security: bool = os.getenv("ENABLE_SECURITY", "True").lower() == "true"
+    blacklist_db_path: str = os.getenv("BLACKLIST_DB_PATH", _get_environment_specific_value("BLACKLIST_DB_PATH", "./data/security.db", "/app/data/security.db"))
+    detection_confidence_threshold: float = float(os.getenv("DETECTION_CONFIDENCE_THRESHOLD", "0.7"))
+    enable_prompt_injection_detection: bool = os.getenv("ENABLE_PROMPT_INJECTION_DETECTION", "True").lower() == "true"
+    violation_threshold: int = int(os.getenv("VIOLATION_THRESHOLD", "1"))  # New: how many violations before block
 
 @dataclass
 class KnowledgeBaseConfig:
     """Knowledge base configuration"""
-    knowledge_base_path: str = os.getenv("KNOWLEDGE_BASE_PATH", "/app/TUM_QA.json")
+    knowledge_base_path: str = os.getenv("KNOWLEDGE_BASE_PATH", _get_environment_specific_value("KNOWLEDGE_BASE_PATH", "./TUM_QA.json", "/app/TUM_QA.json"))
     max_context_length: int = int(os.getenv("MAX_CONTEXT_LENGTH", "4000"))
     conversation_history_limit: int = int(os.getenv("CONVERSATION_HISTORY_LIMIT", "12"))
 

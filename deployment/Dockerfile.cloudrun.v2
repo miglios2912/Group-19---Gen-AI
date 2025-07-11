@@ -1,0 +1,99 @@
+# Cloud Run Optimized Dockerfile V2 - Single Container (Backend V2 + Frontend V2)
+# Serves React V2 frontend via Flask V2 backend with smart context detection
+
+FROM python:3.13-slim
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV FLASK_ENV=production
+ENV ENVIRONMENT=production
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    curl \
+    nodejs \
+    npm \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create app directory
+WORKDIR /app
+
+# Copy and install Python dependencies first (better Docker layer caching)
+COPY backend/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy backend code
+COPY backend/ ./backend/
+WORKDIR /app/backend
+
+# Create necessary directories with proper permissions
+RUN mkdir -p logs data chroma_db && \
+    chmod 755 logs data chroma_db
+
+# Copy and build V2 frontend
+COPY frontend-mobile-v2/ /tmp/frontend-v2/
+WORKDIR /tmp/frontend-v2
+
+# Install frontend dependencies and build
+RUN npm ci && npm run build
+
+# Copy built V2 frontend to backend static directory
+WORKDIR /app/backend
+RUN mkdir -p static && \
+    cp -r /tmp/frontend-v2/dist/* static/ && \
+    rm -rf /tmp/frontend-v2
+
+# Set working directory back to backend
+WORKDIR /app/backend
+
+# Create a simple server that serves both V2 API and V2 frontend
+RUN echo 'from flask import Flask, send_from_directory, send_file\n\
+import os\n\
+from api_v2 import api_v2_instance\n\
+\n\
+app = api_v2_instance.app\n\
+\n\
+# Serve React V2 frontend\n\
+@app.route("/")\n\
+def serve_frontend():\n\
+    return send_file("static/index.html")\n\
+\n\
+@app.route("/<path:path>")\n\
+def serve_static(path):\n\
+    if path.startswith("api/"):\n\
+        # Let existing V2 API routes handle API calls\n\
+        return app.handle_exception(Exception("Route not found"))\n\
+    \n\
+    static_file = os.path.join("static", path)\n\
+    if os.path.exists(static_file):\n\
+        return send_from_directory("static", path)\n\
+    else:\n\
+        # For React Router - serve index.html for unknown routes\n\
+        return send_file("static/index.html")\n\
+\n\
+if __name__ == "__main__":\n\
+    port = int(os.environ.get("PORT", 8080))\n\
+    app.run(host="0.0.0.0", port=port)' > app_cloudrun_v2.py
+
+# Health check for Cloud Run - use V2 API endpoint
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:${PORT:-8080}/api/v2/health || exit 1
+
+# Expose port (Cloud Run will set PORT env var)
+EXPOSE 8080
+
+# Use Gunicorn for production with V2 app
+CMD exec gunicorn --bind 0.0.0.0:${PORT:-8080} \
+    --workers 1 \
+    --worker-class sync \
+    --timeout 120 \
+    --keep-alive 5 \
+    --max-requests 1000 \
+    --max-requests-jitter 100 \
+    --access-logfile - \
+    --error-logfile - \
+    --log-level info \
+    app_cloudrun_v2:app

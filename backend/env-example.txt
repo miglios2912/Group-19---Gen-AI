@@ -1,0 +1,250 @@
+# =============================================================================
+# TUM Chatbot V2 - Environment Variables Configuration
+# =============================================================================
+# Copy this file to .env and modify the values as needed
+# cp env-example.txt .env
+# =============================================================================
+
+# =============================================================================
+# ENVIRONMENT SETTING (REQUIRED)
+# =============================================================================
+# Controls all environment-specific behavior automatically
+# Options: "development" or "production"
+ENVIRONMENT=development
+
+# =============================================================================
+# APPLICATION SETTINGS
+# =============================================================================
+APP_NAME=TUM Chatbot
+APP_VERSION=2.0.0
+
+# =============================================================================
+# GOOGLE GEMINI API CONFIGURATION (REQUIRED)
+# =============================================================================
+# Your Google Gemini API key - Get from https://makersuite.google.com/app/apikey
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Gemini model to use
+GEMINI_MODEL=gemini-2.5-flash
+
+# Maximum tokens for response generation
+GEMINI_MAX_TOKENS=4096
+
+# Temperature for response creativity (0.0 = deterministic, 1.0 = very creative)
+GEMINI_TEMPERATURE=0.7
+
+# =============================================================================
+# SERVER CONFIGURATION
+# =============================================================================
+# Server host address
+SERVER_HOST=0.0.0.0
+
+# Server port
+SERVER_PORT=8083
+
+# Flask debug mode (automatically set based on ENVIRONMENT)
+# FLASK_DEBUG=True  # Only for development
+
+# Gunicorn workers (for production deployment)
+GUNICORN_WORKERS=4
+
+# Request timeout in seconds
+REQUEST_TIMEOUT=30
+
+# =============================================================================
+# CORS CONFIGURATION
+# =============================================================================
+# Enable CORS
+ENABLE_CORS=True
+
+# Allowed CORS origins (comma-separated)
+CORS_ORIGINS=http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000
+
+# =============================================================================
+# RATE LIMITING
+# =============================================================================
+# Enable rate limiting
+ENABLE_RATE_LIMITING=True
+
+# Number of requests allowed per window
+RATE_LIMIT_REQUESTS=100
+
+# Rate limit window in seconds (1 hour default)
+RATE_LIMIT_WINDOW=3600
+
+# =============================================================================
+# SESSION MANAGEMENT
+# =============================================================================
+# Session timeout in seconds
+SESSION_TIMEOUT=3600
+
+# =============================================================================
+# ADVANCED SECURITY SETTINGS
+# =============================================================================
+# Enable security features (prompt injection detection, IP blacklisting)
+ENABLE_SECURITY=True
+
+# Enable prompt injection detection using LLM
+ENABLE_PROMPT_INJECTION_DETECTION=True
+
+# Detection confidence threshold (0.0-1.0)
+# Higher values = more strict detection
+DETECTION_CONFIDENCE_THRESHOLD=0.7
+
+# Security database path (automatically set based on ENVIRONMENT) NOT CURRENTLY TRUE
+# Development: ./data/security.db
+# Production: /app/data/security.db
+BLACKLIST_DB_PATH=./data/security.db
+
+# Number of violations allowed before IP is blocked (default: 1)
+# Set to 3 to allow 2 warnings before blocking on the 3rd offense
+VIOLATION_THRESHOLD=2
+
+# =============================================================================
+# DATABASE CONFIGURATION
+# =============================================================================
+# ChromaDB path (automatically set based on ENVIRONMENT)
+# Development: ./data/chroma_db
+# Production: /app/data/chroma_db
+CHROMA_DB_PATH=./data/chroma_db
+
+# ChromaDB collection name
+CHROMA_COLLECTION_NAME=tum_qa_collection
+
+# ChromaDB persist directory (automatically set based on ENVIRONMENT)
+CHROMA_PERSIST_DIR=./data/chroma_db
+
+# =============================================================================
+# SEARCH CONFIGURATION
+# =============================================================================
+# Number of results for semantic search
+SEMANTIC_SEARCH_TOP_K=5
+
+# Number of results for keyword search
+KEYWORD_SEARCH_TOP_K=5
+
+# Number of results for hybrid search
+HYBRID_SEARCH_TOP_K=5
+
+# Embedding model for semantic search
+EMBEDDING_MODEL=all-MiniLM-L6-v2
+
+# Similarity threshold for search results
+SIMILARITY_THRESHOLD=0.3
+
+# =============================================================================
+# KNOWLEDGE BASE CONFIGURATION
+# =============================================================================
+# Path to knowledge base JSON file (automatically set based on ENVIRONMENT)
+# Development: ./TUM_QA.json
+# Production: /app/TUM_QA.json
+KNOWLEDGE_BASE_PATH=./TUM_QA.json
+
+# Maximum context length for AI prompts
+MAX_CONTEXT_LENGTH=4000
+
+# Maximum conversation history entries to keep
+CONVERSATION_HISTORY_LIMIT=12
+
+# =============================================================================
+# LOGGING CONFIGURATION
+# =============================================================================
+# Log level (automatically set based on ENVIRONMENT)
+# Development: DEBUG
+# Production: WARNING
+LOG_LEVEL=DEBUG
+
+# Log file path (automatically set based on ENVIRONMENT)
+# Development: ./logs/tum_chatbot.log
+# Production: /app/logs/tum_chatbot.log
+LOG_FILE=./logs/tum_chatbot.log
+
+# Log format
+LOG_FORMAT=%(asctime)s - %(name)s - %(levelname)s - %(message)s
+
+# Maximum log file size in bytes (10MB default)
+MAX_LOG_SIZE=10485760
+
+# Number of log backup files to keep
+LOG_BACKUP_COUNT=5
+
+# =============================================================================
+# CHAT SESSION LOGGING (DEVELOPMENT ONLY)
+# =============================================================================
+# ⚠️  SECURITY WARNING: This logs all user conversations!
+# ⚠️  Only enable in development mode for debugging
+# ⚠️  Set to False in production to avoid logging sensitive data
+LOG_CHAT_SESSIONS=True
+
+# Chat session log file path (automatically set based on ENVIRONMENT)
+# Development: ./logs/chat_sessions.log
+# Production: /app/logs/chat_sessions.log
+CHAT_SESSION_FILE=./logs/chat_sessions.log
+
+# =============================================================================
+# STATISTICS AND ANALYTICS
+# =============================================================================
+# Enable statistics collection
+ENABLE_STATISTICS=True
+
+# Statistics database path (automatically set based on ENVIRONMENT)
+# Development: ./data/statistics.db
+# Production: /app/data/statistics.db
+STATS_DB_PATH=./data/statistics.db
+
+# Track user sessions
+TRACK_USER_SESSIONS=True
+
+# Track query analytics
+TRACK_QUERY_ANALYTICS=True
+
+# Anonymize user data in statistics
+ANONYMIZE_DATA=True
+
+
+# =============================================================================
+# PRODUCTION DEPLOYMENT SETTINGS
+# =============================================================================
+# These settings are typically only used in production
+
+# Production log level
+# LOG_LEVEL=WARNING
+
+# Production database paths
+# CHROMA_DB_PATH=/app/data/chroma_db
+# CHROMA_PERSIST_DIR=/app/data/chroma_db
+# KNOWLEDGE_BASE_PATH=/app/TUM_QA.json
+# LOG_FILE=/app/logs/tum_chatbot.log
+# CHAT_SESSION_FILE=/app/logs/chat_sessions.log
+# STATS_DB_PATH=/app/data/statistics.db
+
+# =============================================================================
+# ENVIRONMENT-SPECIFIC BEHAVIOR
+# =============================================================================
+# When ENVIRONMENT=development:
+# - Debug mode enabled by default
+# - Local file paths used (./logs/, ./data/, etc.)
+# - Chat session logging can be enabled
+# - Detailed logging enabled
+
+# When ENVIRONMENT=production:
+# - Debug mode disabled by default
+# - Production file paths used (/app/logs/, /app/data/, etc.)
+# - Chat session logging automatically disabled
+# - Minimal logging enabled
+# - Rate limiting enabled
+# - CORS restrictions applied
+
+# =============================================================================
+# SECURITY NOTES
+# =============================================================================
+# 1. Never commit your .env file to version control
+# 2. Keep your GEMINI_API_KEY secure
+# 3. Disable LOG_CHAT_SESSIONS in production
+# 4. Use strong rate limiting in production
+# 5. Configure CORS origins properly for production
+# 6. Enable ANONYMIZE_DATA in production
+# 7. Enable ENABLE_SECURITY in production for prompt injection protection
+# 8. Monitor security statistics via /api/v2/security/stats endpoint
+# 9. IP blacklists are permanent - review regularly in production
+# 10. Adjust DETECTION_CONFIDENCE_THRESHOLD based on false positive rate

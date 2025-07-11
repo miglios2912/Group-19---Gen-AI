@@ -97,7 +97,20 @@ def setup_logger(name: str = "tum_chatbot") -> logging.Logger:
 
 def get_logger(name: str = "tum_chatbot") -> logging.Logger:
     """Get a logger instance"""
-    return logging.getLogger(name)
+    logger = logging.getLogger(name)
+    
+    # If this is not the main logger, ensure it has the same handlers
+    if name != "tum_chatbot":
+        # Get the main logger to inherit its handlers
+        main_logger = logging.getLogger("tum_chatbot")
+        if main_logger.handlers:
+            # Clear any existing handlers and copy from main logger
+            logger.handlers.clear()
+            for handler in main_logger.handlers:
+                logger.addHandler(handler)
+            logger.setLevel(main_logger.level)
+    
+    return logger
 
 class RequestLogger:
     """Context manager for request logging"""
@@ -237,6 +250,27 @@ def log_chat_session(user_id: str, session_id: str, query: str, response: str,
     
     if not config.logging.log_chat_sessions:
         return
+    
+    # Strong warning for development mode chat session logging
+    if config.environment.lower() == "development":
+        print("\n" + "="*80)
+        print("⚠️  DEVELOPMENT MODE WARNING ⚠️")
+        print("="*80)
+        print("🔒 CHAT SESSION LOGGING IS ENABLED")
+        print("📝 All user conversations are being logged to:")
+        print(f"   {config.logging.chat_session_file}")
+        print("⚠️  This includes sensitive user data and should NEVER be enabled in production!")
+        print("🔧 To disable: set LOG_CHAT_SESSIONS=False in your .env file")
+        print("="*80 + "\n")
+    else:
+        # Production warning if somehow enabled
+        print("\n" + "="*80)
+        print("🚨 PRODUCTION SECURITY WARNING 🚨")
+        print("="*80)
+        print("❌ CHAT SESSION LOGGING IS ENABLED IN PRODUCTION!")
+        print("🔒 This is a security risk - user conversations are being logged!")
+        print("🛑 IMMEDIATELY DISABLE by setting LOG_CHAT_SESSIONS=False")
+        print("="*80 + "\n")
     
     try:
         # Ensure chat session log directory exists

@@ -72,6 +72,10 @@ class StatisticsManager:
     def initialize_database(self):
         """Initialize the statistics database with required tables"""
         try:
+            # Use local directory for development
+            if self.db_path.startswith('/app/'):
+                self.db_path = self.db_path.replace('/app/', './data/')
+            
             # Ensure database directory exists
             db_dir = os.path.dirname(self.db_path)
             if db_dir and not os.path.exists(db_dir):
