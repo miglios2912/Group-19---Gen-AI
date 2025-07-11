@@ -1,13 +1,20 @@
 # Cloud Run Optimized Dockerfile V2 - Single Container (Backend V2 + Frontend V2)
 # Serves React V2 frontend via Flask V2 backend with smart context detection
 
-FROM python:3.13-slim
+FROM python:3.11-slim
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV FLASK_ENV=production
 ENV ENVIRONMENT=production
+ENV LOG_LEVEL=WARNING
+ENV LOG_CHAT_SESSIONS=False
+ENV ENABLE_SECURITY=True
+ENV ENABLE_RATE_LIMITING=True
+ENV ENABLE_CORS=True
+ENV ENABLE_STATISTICS=True
+ENV ENABLE_PROMPT_INJECTION_DETECTION=True
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -33,8 +40,11 @@ WORKDIR /app/backend
 RUN mkdir -p logs data chroma_db && \
     chmod 755 logs data chroma_db
 
+# Copy knowledge base file
+COPY backend/TUM_QA.json /app/TUM_QA.json
+
 # Copy and build V2 frontend
-COPY frontend-mobile-v2/ /tmp/frontend-v2/
+COPY frontend/ /tmp/frontend-v2/
 WORKDIR /tmp/frontend-v2
 
 # Install frontend dependencies and build

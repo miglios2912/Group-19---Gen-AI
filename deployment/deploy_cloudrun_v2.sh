@@ -52,8 +52,14 @@ if [ -f ".env" ]; then
 elif [ -f ".env.production" ]; then
     print_status "Using .env.production file for configuration"
     source .env.production
+elif [ -f "backend/.env" ]; then
+    print_status "Using backend/.env file for configuration"
+    source backend/.env
+elif [ -f "backend/.env.production" ]; then
+    print_status "Using backend/.env.production file for configuration"
+    source backend/.env.production
 else
-    print_error "No .env file found!"
+    print_error "No .env file found in root or backend directory!"
     exit 1
 fi
 
@@ -61,6 +67,30 @@ if [ -z "$GEMINI_API_KEY" ] || [ "$GEMINI_API_KEY" = "your_gemini_api_key_here" 
     print_error "Please set your GEMINI_API_KEY in .env file"
     exit 1
 fi
+
+# Set default values for missing environment variables
+ENVIRONMENT=${ENVIRONMENT:-production}
+FLASK_ENV=${FLASK_ENV:-production}
+GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
+GEMINI_MAX_TOKENS=${GEMINI_MAX_TOKENS:-4096}
+GEMINI_TEMPERATURE=${GEMINI_TEMPERATURE:-0.7}
+SEMANTIC_SEARCH_TOP_K=${SEMANTIC_SEARCH_TOP_K:-5}
+EMBEDDING_MODEL=${EMBEDDING_MODEL:-all-MiniLM-L6-v2}
+SIMILARITY_THRESHOLD=${SIMILARITY_THRESHOLD:-0.3}
+LOG_LEVEL=${LOG_LEVEL:-WARNING}
+ENABLE_SECURITY=${ENABLE_SECURITY:-True}
+ENABLE_RATE_LIMITING=${ENABLE_RATE_LIMITING:-True}
+ENABLE_CORS=${ENABLE_CORS:-True}
+ENABLE_STATISTICS=${ENABLE_STATISTICS:-True}
+LOG_CHAT_SESSIONS=${LOG_CHAT_SESSIONS:-False}
+ENABLE_PROMPT_INJECTION_DETECTION=${ENABLE_PROMPT_INJECTION_DETECTION:-True}
+DETECTION_CONFIDENCE_THRESHOLD=${DETECTION_CONFIDENCE_THRESHOLD:-0.8}
+VIOLATION_THRESHOLD=${VIOLATION_THRESHOLD:-2}
+RATE_LIMIT_REQUESTS=${RATE_LIMIT_REQUESTS:-100}
+RATE_LIMIT_WINDOW=${RATE_LIMIT_WINDOW:-3600}
+SESSION_TIMEOUT=${SESSION_TIMEOUT:-3600}
+MAX_CONTEXT_LENGTH=${MAX_CONTEXT_LENGTH:-4000}
+CONVERSATION_HISTORY_LIMIT=${CONVERSATION_HISTORY_LIMIT:-12}
 
 print_status "Configuration:"
 echo "  Project ID: $PROJECT_ID"
@@ -108,8 +138,28 @@ gcloud run deploy $SERVICE_NAME \
     --platform managed \
     --region $REGION \
     --allow-unauthenticated \
-    --set-env-vars ENVIRONMENT=production,FLASK_ENV=production \
+    --set-env-vars ENVIRONMENT=$ENVIRONMENT,FLASK_ENV=$FLASK_ENV \
     --set-env-vars GEMINI_API_KEY="$GEMINI_API_KEY" \
+    --set-env-vars GEMINI_MODEL=$GEMINI_MODEL \
+    --set-env-vars GEMINI_MAX_TOKENS=$GEMINI_MAX_TOKENS \
+    --set-env-vars GEMINI_TEMPERATURE=$GEMINI_TEMPERATURE \
+    --set-env-vars SEMANTIC_SEARCH_TOP_K=$SEMANTIC_SEARCH_TOP_K \
+    --set-env-vars EMBEDDING_MODEL=$EMBEDDING_MODEL \
+    --set-env-vars SIMILARITY_THRESHOLD=$SIMILARITY_THRESHOLD \
+    --set-env-vars LOG_LEVEL=$LOG_LEVEL \
+    --set-env-vars ENABLE_SECURITY=$ENABLE_SECURITY \
+    --set-env-vars ENABLE_RATE_LIMITING=$ENABLE_RATE_LIMITING \
+    --set-env-vars ENABLE_CORS=$ENABLE_CORS \
+    --set-env-vars ENABLE_STATISTICS=$ENABLE_STATISTICS \
+    --set-env-vars LOG_CHAT_SESSIONS=$LOG_CHAT_SESSIONS \
+    --set-env-vars ENABLE_PROMPT_INJECTION_DETECTION=$ENABLE_PROMPT_INJECTION_DETECTION \
+    --set-env-vars DETECTION_CONFIDENCE_THRESHOLD=$DETECTION_CONFIDENCE_THRESHOLD \
+    --set-env-vars VIOLATION_THRESHOLD=$VIOLATION_THRESHOLD \
+    --set-env-vars RATE_LIMIT_REQUESTS=$RATE_LIMIT_REQUESTS \
+    --set-env-vars RATE_LIMIT_WINDOW=$RATE_LIMIT_WINDOW \
+    --set-env-vars SESSION_TIMEOUT=$SESSION_TIMEOUT \
+    --set-env-vars MAX_CONTEXT_LENGTH=$MAX_CONTEXT_LENGTH \
+    --set-env-vars CONVERSATION_HISTORY_LIMIT=$CONVERSATION_HISTORY_LIMIT \
     --memory 1Gi \
     --cpu 1 \
     --timeout 300 \
