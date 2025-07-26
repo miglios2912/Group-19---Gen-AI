@@ -1,4 +1,4 @@
-# TUM Chatbot - Smart University Assistant
+# TUM Onboarding Assistant - Smart University Assistant
 
 We built a chatbot that helps TUM students and staff find answers to university questions using generative AI and smart search techniques.
 
